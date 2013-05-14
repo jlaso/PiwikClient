@@ -48,13 +48,14 @@ class Client
     /**
      * Call specific method & return it's response.
      *
-     * @param   string  $method     method name
-     * @param   array   $params     method parameters
-     * @param   string  $format     return format (php, json, xml, csv, tsv, html, rss)
+     * @param   string $method     method name
+     * @param   array $params      method parameters
+     * @param   string $format     return format (json, xml, csv, tsv, html, rss)
      *
+     * @throws Exception\Exception
      * @return  mixed
      */
-    public function call($method, array $params = array(), $format = 'php')
+    public function call($method, array $params = array(), $format = 'json')
     {
         $params['method']       = $method;
         $params['token_auth']   = $this->token;
@@ -62,8 +63,8 @@ class Client
 
         $data = $this->getConnection()->send($params);
 
-        if ('php' === $format) {
-            $object = unserialize($data);
+        if ('json' === $format) {
+            $object = json_decode($data, true);
 
             if (isset($object['result']) && 'error' === $object['result']) {
                 throw new Exception($object['message']);
